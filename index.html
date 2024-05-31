@@ -56,11 +56,22 @@
             padding: 20px;
             box-sizing: border-box;
             border-radius: 8px;
-            position: relative;
+        }
+
+        .input-field {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            width: calc(100% - 22px); /* To account for padding */
+            box-sizing: border-box;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background-color: #222;
+            color: white;
+            outline: none;
         }
 
         #code {
-            width: 100%;
             height: 300px;
             border: none;
             background-color: #000;
@@ -72,37 +83,6 @@
             resize: none;
             overflow: auto;
             box-sizing: border-box;
-            position: relative;
-            z-index: 1;
-        }
-
-        #masked-code {
-            position: absolute;
-            top: 20px; /* Adjust based on the padding */
-            left: 20px; /* Adjust based on the padding */
-            width: calc(100% - 40px); /* Adjust based on the padding */
-            height: 300px;
-            background-color: #000;
-            color: #fff;
-            font-size: 16px;
-            padding: 10px;
-            box-sizing: border-box;
-            pointer-events: none;
-            white-space: pre-wrap;
-            overflow: hidden;
-        }
-
-        #name-input {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
-            width: calc(100% - 22px); /* To account for padding */
-            box-sizing: border-box;
-            border-radius: 4px;
-            border: 1px solid #333;
-            background-color: #222;
-            color: white;
-            outline: none;
         }
 
         #submit-btn {
@@ -144,77 +124,51 @@
             </ul>
         </div>
         <div class="code-editor">
+            <select id="language-select" class="input-field">
+                <option value="C">C</option>
+                <option value="C++">C++</option>
+                <option value="Python">Python</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Java">Java</option>
+                <option value="Ruby">Ruby</option>
+                <!-- Add more languages as needed -->
+            </select>
+            <input type="text" id="name-input" class="input-field" placeholder="Enter your name">
             <textarea id="code" placeholder="Write your code here..." autofocus></textarea>
-            <div id="masked-code"></div>
-            <input type="text" id="name-input" placeholder="Enter your name">
             <button id="submit-btn">Submit Code</button>
         </div>
     </div>
 
     <script>
-        const codeTextarea = document.getElementById('code');
-        const maskedCodeDiv = document.getElementById('masked-code');
-        let actualCode = '';
+    document.getElementById('submit-btn').addEventListener('click', () => {
+        const name = document.getElementById('name-input').value;
+        const language = document.getElementById('language-select').value;
+        const code = actualCode; // use actual code, not masked code
+        const timestamp = new Date().toISOString();
 
-        codeTextarea.addEventListener('input', (event) => {
-            const inputValue = event.target.value;
-            const lastChar = inputValue[inputValue.length - 1];
-
-            if (inputValue.length < actualCode.length) {
-                // Handle backspace/delete
-                actualCode = actualCode.slice(0, inputValue.length);
-            } else {
-                // Add the last typed character to the actual code
-                actualCode += lastChar;
-            }
-
-            // Update the masked div and the textarea value
-            maskedCodeDiv.textContent = '*'.repeat(actualCode.length);
-            event.target.value = maskedCodeDiv.textContent;
-        });
-
-        codeTextarea.addEventListener('scroll', () => {
-            maskedCodeDiv.scrollTop = codeTextarea.scrollTop; // Sync scroll positions
-        });
-
-        // Initial sync to ensure masked code div matches the textarea size
-        const syncStyles = () => {
-            maskedCodeDiv.style.width = codeTextarea.clientWidth + 'px';
-            maskedCodeDiv.style.height = codeTextarea.clientHeight + 'px';
-            maskedCodeDiv.style.fontSize = getComputedStyle(codeTextarea).fontSize;
-            maskedCodeDiv.style.lineHeight = getComputedStyle(codeTextarea).lineHeight;
+        const data = {
+            name: name,
+            language: language,
+            code: code,
+            timestamp: timestamp
         };
 
-        window.addEventListener('resize', syncStyles);
-        syncStyles(); // Initial sync
-
-        document.getElementById('submit-btn').addEventListener('click', () => {
-            const name = document.getElementById('name-input').value;
-            const code = actualCode; // use actual code, not masked code
-            const timestamp = new Date().toISOString();
-
-            const data = {
-                name: name,
-                code: code,
-                timestamp: timestamp
-            };
-
-            fetch('https://script.google.com/macros/s/AKfycbx4AXfrWnUzlnowlTuV7sFW34wQQT0SISkHSety0_Dk_IuCaEMGKJScQk36ZEbGoy8C/exec', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                alert('Code submitted successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error submitting code.');
-            });
+        fetch('https://script.google.com/macros/s/AKfycbwI3a4qg53EqfUhrdsrBibh_fxXEdzRpdf6WfsP_GzY7fgL0m2RJHFrldsR7Pr_Z4Wp/exec', { // Replace with your Google Apps Script web app URL
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            alert('Code submitted successfully!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error submitting code.');
         });
-    </script>
+    });
+</script>
 </body>
 </html>
