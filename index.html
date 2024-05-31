@@ -140,35 +140,54 @@
     </div>
 
     <script>
-    document.getElementById('submit-btn').addEventListener('click', () => {
-        const name = document.getElementById('name-input').value;
-        const language = document.getElementById('language-select').value;
-        const code = actualCode; // use actual code, not masked code
-        const timestamp = new Date().toISOString();
+        const codeTextarea = document.getElementById('code');
+        let actualCode = '';
 
-        const data = {
-            name: name,
-            language: language,
-            code: code,
-            timestamp: timestamp
-        };
+        codeTextarea.addEventListener('input', (event) => {
+            const inputValue = event.target.value;
+            const lastChar = inputValue[inputValue.length - 1];
 
-        fetch('https://script.google.com/macros/s/AKfycbwI3a4qg53EqfUhrdsrBibh_fxXEdzRpdf6WfsP_GzY7fgL0m2RJHFrldsR7Pr_Z4Wp/exec', { // Replace with your Google Apps Script web app URL
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            alert('Code submitted successfully!');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error submitting code.');
+            if (inputValue.length < actualCode.length) {
+                // Handle backspace/delete
+                actualCode = actualCode.slice(0, inputValue.length);
+            } else {
+                // Add the last typed character to the actual code
+                actualCode += lastChar;
+            }
+
+            // Update the textarea value with stars
+            event.target.value = '*'.repeat(actualCode.length);
         });
-    });
-</script>
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            const name = document.getElementById('name-input').value;
+            const language = document.getElementById('language-select').value;
+            const code = actualCode; // use actual code, not masked code
+            const timestamp = new Date().toISOString();
+
+            const data = {
+                name: name,
+                language: language,
+                code: code,
+                timestamp: timestamp
+            };
+
+            fetch('https://script.google.com/macros/s/AKfycbwI3a4qg53EqfUhrdsrBibh_fxXEdzRpdf6WfsP_GzY7fgL0m2RJHFrldsR7Pr_Z4Wp/exec', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert('Code submitted successfully!');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting code.');
+            });
+        });
+    </script>
 </body>
 </html>
