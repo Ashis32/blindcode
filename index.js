@@ -1,58 +1,44 @@
-let submitted = false; // Flag to track submission
+// Submit form data to Google Sheets
+async function submitCode() {
+    submitted = true; // Set submitted flag to true
 
-        // Set the countdown timer
-        const countdownElement = document.getElementById('countdown');
-        const endTime = new Date();
-        endTime.setMinutes(endTime.getMinutes() + 2);
+    const formData = new FormData(document.getElementById('code-form'));
+    const data = {
+        name: formData.get('name-input'),
+        language: formData.get('language-select'),
+        college: formData.get('college-select'),
+        course: formData.get('course-select'),
+        year: formData.get('year-select'),
+        code: formData.get('new-secret-input')
+    };
 
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = endTime - now;
-
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            const milliseconds = Math.floor((distance % 1000) / 10);
-
-            countdownElement.textContent = minutes + 'm ' + seconds + 's ' + milliseconds + 'ms';
-
-            if (minutes === 1 && seconds === 0 && milliseconds === 0) {
-                alert("Only 1 minute left! Please submit your code.");
-            }
-
-            if (distance < 0 && !submitted) {
-                clearInterval(interval);
-                countdownElement.textContent = 'Time Expired';
-                submitCode();
-            }
-        }
-
-        function submitCode() {
-            // Simulate form submission
-            // document.getElementById('code-form').submit(); // Remove this line to prevent actual form submission
-            submitted = true; // Set submitted flag to true
-            showThanksModal();
-        }
-
-        const interval = setInterval(updateCountdown, 10);
-
-        // Enter full screen function
-        function enterFullScreen() {
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.mozRequestFullScreen) {
-                document.documentElement.mozRequestFullScreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
-            } else if (document.documentElement.msRequestFullscreen) {
-                document.documentElement.msRequestFullscreen();
-            }
-        }
-
-        // Show confirmation modal on submit
-        document.getElementById('code-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            document.getElementById('confirmModal').style.display = 'block';
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbxYNR__YOUR_SCRIPT_URL__HU5p/exec', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
         });
+
+        if (response.ok) {
+            showThanksModal();
+        } else {
+            const errorData = await response.json();
+            alert('Failed to submit the form: ' + errorData.message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to submit the form. Please try again.');
+    }
+}
+
+// Show confirmation modal on submit
+document.getElementById('code-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    document.getElementById('confirmModal').style.display = 'block';
+});
+
 
         // Close modal function
         function closeModal() {
