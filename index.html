@@ -4,190 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blind Code Editor</title>
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            background-color: #000;
-            color: #fff;
-        }
-
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            max-height: 50px;
-        }
-
-        .top-nav h1 {
-            margin: 0;
-        }
-
-        .container {
-            display: flex;
-            height: calc(100% - 50px);
-            padding: 20px;
-            box-sizing: border-box;
-        }
-
-        .question {
-            width: 40%;
-            margin-right: 20px;
-            background-color: #fff;
-            color: #000;
-            padding: 20px;
-            box-sizing: border-box;
-            border-radius: 8px;
-        }
-
-        .code-editor {
-            width: 60%;
-            display: flex;
-            flex-direction: column;
-            background-color: #000;
-            padding: 20px;
-            box-sizing: border-box;
-            border-radius: 8px;
-        }
-
-        .input-field {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 16px;
-            width: calc(100% - 22px); /* To account for padding */
-            box-sizing: border-box;
-            border-radius: 4px;
-            border: 1px solid #333;
-            background-color: #222;
-            color: white;
-            outline: none;
-        }
-
-        #code {
-            height: 300px;
-            border: none;
-            background-color: #000;
-            color: transparent;
-            caret-color: #fff;
-            font-size: 16px;
-            padding: 10px;
-            outline: none;
-            resize: none;
-            overflow: auto;
-            box-sizing: border-box;
-        }
-
-        #submit-btn {
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            align-self: flex-start;
-        }
-
-        #submit-btn:hover {
-            background-color: #555;
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <nav>
         <div class="logo">
             <img src="logo.png" alt="Logo">
         </div>
-        <div class="top-nav">
+        <div class="title">
             <h1>BLIND CODE</h1>
         </div>
     </nav>
-    
     <div class="container">
-        <div class="question">
+        <div class="left-side">
             <h2>Question:</h2>
-            <!-- Your question content here -->
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <h3>Test Cases:</h3>
-            <!-- Your test cases here -->
             <ul>
                 <li>Test case 1: ...</li>
                 <li>Test case 2: ...</li>
             </ul>
         </div>
-        <div class="code-editor">
-            <select id="language-select" class="input-field">
-                <option value="C">C</option>
-                <option value="C++">C++</option>
-                <option value="Python">Python</option>
-                <option value="JavaScript">JavaScript</option>
-                <option value="Java">Java</option>
-                <option value="Ruby">Ruby</option>
-                <!-- Add more languages as needed -->
-            </select>
-            <input type="text" id="name-input" class="input-field" placeholder="Enter your name">
-            <textarea id="code" placeholder="Write your code here..." autofocus></textarea>
-            <button id="submit-btn">Submit Code</button>
+        <div class="right-side">
+            <h2>Code Editor</h2>
+            <form id="code-form">
+                <div class="name-input">
+                    <input type="text" id="name-input" class="input-field" placeholder="Name" required>
+                </div>
+                <h3>Select Programming Language</h3>
+                <select id="language-select" class="input-field" required>
+                    <option value="">Select Language</option>
+                    <option value="C">C</option>
+                    <option value="C++">C++</option>
+                    <option value="Python">Python</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="Java">Java</option>
+                    <option value="Ruby">Ruby</option>
+                </select>
+                <div class="input-container">
+                    <select id="college-select" class="input-field" required>
+                        <option value="">Select College</option>
+                        <option value="College A">College A</option>
+                        <option value="College B">College B</option>
+                        <option value="College C">College C</option>
+                    </select>
+                    <select id="course-select" class="input-field" required>
+                        <option value="">Select Course</option>
+                        <option value="Course A">Course A</option>
+                        <option value="Course B">Course B</option>
+                        <option value="Course C">Course C</option>
+                    </select>
+                    <select id="year-select" class="input-field" required>
+                        <option value="">Select Year</option>
+                        <option value="First Year">First Year</option>
+                        <option value="Second Year">Second Year</option>
+                        <option value="Third Year">Third Year</option>
+                        <option value="Fourth Year">Fourth Year</option>
+                    </select>
+                </div>
+                <div class="timer-container">
+                    <div class="timer" id="timer">Time: <span id="countdown"></span></div>
+                </div>
+                <div class="textcontainer">
+                    <textarea id="new-secret-input" placeholder="Type something..." required></textarea>
+                    <div class="covertext"></div>
+                </div>
+                <button type="submit" class="submit-button" id="submit-button">Submit</button>
+            </form>
+            <button class="fullscreen-button" onclick="enterFullScreen()">Go Fullscreen</button>
         </div>
     </div>
 
-    <script>
-        const codeTextarea = document.getElementById('code');
-        let actualCode = '';
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <p>Are you sure to submit your code?</p>
+            <div class="modal-buttons">
+                <button class="close" onclick="closeModal()">Cancel</button>
+                <button class="confirm" onclick="confirmSubmit()">Confirm</button>
+            </div>
+        </div>
+    </div>
 
-        codeTextarea.addEventListener('input', (event) => {
-            const inputValue = event.target.value;
-            const lastChar = inputValue[inputValue.length - 1];
+    <!-- Thanks Modal -->
+    <div id="thanksModal" class="modal">
+        <div class="thanks-modal-content">
+            <p>Thank you for your submission! 😊</p>
+            <p>Your code has been successfully submitted.</p>
+        </div>
+    </div>
 
-            if (inputValue.length < actualCode.length) {
-                // Handle backspace/delete
-                actualCode = actualCode.slice(0, inputValue.length);
-            } else {
-                // Add the last typed character to the actual code
-                actualCode += lastChar;
-            }
-
-            // Update the textarea value with stars
-            event.target.value = '*'.repeat(actualCode.length);
-        });
-
-        document.getElementById('submit-btn').addEventListener('click', () => {
-            const name = document.getElementById('name-input').value;
-            const language = document.getElementById('language-select').value;
-            const code = actualCode; // use actual code, not masked code
-            const timestamp = new Date().toISOString();
-
-            const data = {
-                name: name,
-                language: language,
-                code: code,
-                timestamp: timestamp
-            };
-
-            fetch('https://script.google.com/macros/s/AKfycbxpIey5AVuK1TiYtIWANlfVnKm-_90n8_NDAIuJl6bkN0J5hDUuHvc3JWQ6NR-xdohQ/exec', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(result => {
-                alert('Code submitted successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error submitting code.');
-            });
-        });
-    </script>
+    <script src="index.js"></script>
 </body>
 </html>
