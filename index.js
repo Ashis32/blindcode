@@ -13,7 +13,7 @@ async function submitCode() {
     };
 
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxYNR__YOUR_SCRIPT_URL__HU5p/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbztgmLs1dQrmV8NxbHO3cwB6UqIbhgLqJbRmdxEri9VMoWNF-_co1ulUJNlyaN1wCug/exec', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
